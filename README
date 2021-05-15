@@ -60,11 +60,12 @@ Building on Ubuntu 16.04:
   export CC=/usr/bin/gcc-9
   export CXX=/usr/bin/g++-9
   mkdir build
+  cd build
   cmake ..
   make
 
 Testing:
-  cd build/bin
+  cd bin
   ./castr http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4
 
 
