@@ -31,7 +31,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <thread>
 #include <vector>
 #include <iostream>
-#include <filesystem>
+//#include <filesystem>
+#include <unistd.h>
 
 #include "rlog/RLog.h"
 #include "rweb/RWeb.h"
@@ -135,7 +136,7 @@ RWeb::handleRequest(int fd, int connectionId)
     long ret, len;
     std::string buffer(BUFSIZE+1, 0);
 
-    ret = read(fd, buffer.data(), BUFSIZE);     // read http request in one go
+    ret = read(fd, (void*) buffer.data(), BUFSIZE);     // read http request in one go
     if (ret == 0 || ret == -1)    // read failure - abort
     {
         log_http_error(FORBIDDEN,"failed to read browser request","", connectionId);
@@ -228,7 +229,7 @@ RWeb::handleRequest(int fd, int connectionId)
                         + "Vary: Origin\n";
     }
 
-    sprintf(buffer.data(), "HTTP/1.1 200 OK\nServer: rweb/%d.0\n"
+    sprintf((char*) buffer.data(), "HTTP/1.1 200 OK\nServer: rweb/%d.0\n"
                            "Content-Length: %ld\n"
                            "%s" // origin response
                            "Connection: close\n"
@@ -239,7 +240,7 @@ RWeb::handleRequest(int fd, int connectionId)
     send(fd, buffer.data(), strlen(buffer.c_str()), MSG_NOSIGNAL);
 
     // send file in 8KB block - last block may be smaller
-    while ( (ret = read(file_fd, buffer.data(), BUFSIZE)) > 0 )
+    while ( (ret = read(file_fd, (void*) buffer.data(), BUFSIZE)) > 0 )
     {
 //         write(fd, buffer.data(), ret);
         ret = send(fd, buffer.data(), ret, MSG_NOSIGNAL);
@@ -274,7 +275,16 @@ RWeb::start()
     }
     if (mRootDir == ".")
     {
-        mRootDir = std::filesystem::current_path();
+        char cwd[500];
+        if (getcwd(cwd, sizeof(cwd)) != NULL) {
+            RLOG(rlog::Critical, "Current working dir: " << cwd);
+        }
+        else
+        {
+            RLOG(rlog::Critical, "getcwd() error");
+            return 1;
+        }
+        mRootDir = cwd;//std::filesystem::current_path();
     }
 
     if (mRootDir == "/"

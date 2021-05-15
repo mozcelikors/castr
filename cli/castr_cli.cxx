@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <filesystem>
+//#include <filesystem>
 
 #include "utils/SslWrapper.h"
 #include "cast_media_player/CastLink.h"
@@ -232,7 +232,7 @@ static std::string url_encode(const std::string& inputString)
 
         // Encode all strange characters as %XX
         oss << std::uppercase;
-        oss << '%' << std::setw(2) << std::hex << int((unsigned char) c);
+        oss << '%' << std::hex << int((unsigned char) c); // was oss << '%' << std::setw(2) << std::hex << int((unsigned char) c);
         oss << std::nouppercase;
     }
     //std::cout << "url_encode " << inputString << " => " << oss.str() << std::endl;
@@ -267,7 +267,7 @@ static bool validate_file_list(const std::vector<std::string>& fileList)
             }
             ++localStreams;
             sNeedsWebserver = true;
-            sRWebStreamingFolder = std::filesystem::path(file).parent_path();
+            sRWebStreamingFolder = " ";//std::filesystem::path(file).parent_path();
             continue;
         }
         ++localFiles;
