@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.8)
 
 set(SOURCES
     SslWrapper.cxx
@@ -17,6 +17,6 @@ set(UTIL_INCLUDE_DIRS
 
 include_directories( ${UTIL_INCLUDE_DIRS} )
 
-add_library(castr_utils OBJECT ${SOURCES})
+add_library(castr_utils STATIC ${SOURCES})
 
 target_include_directories(castr_utils INTERFACE ${UTIL_INCLUDE_DIRS} )
